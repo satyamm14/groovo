@@ -12,9 +12,13 @@
   "app": {
     "windows": [
       {
-        "title": "groovo",
-        "width": 800,
-        "height": 600
+        "title": "Groovo - Music Player",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 1000,
+        "minHeight": 700,
+        "decorations": false,
+        "transparent": true
       }
     ],
     "security": {
