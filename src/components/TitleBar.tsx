@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Minus, Square, X } from "lucide-react";
 import { useState } from "react";
+import { ANIMATIONS } from "../constants/animations";
 
 interface TitleBarProps {
   title: string;
@@ -27,15 +28,15 @@ export default function TitleBar({ title }: TitleBarProps) {
 
   return (
     <motion.div
-      initial={{ y: -50 }}
-      animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 h-12 bg-black/20 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4"
-      style={{ WebkitAppRegion: "drag" }}
+      initial={{ y: ANIMATIONS.TITLEBAR.INITIAL_Y }}
+      animate={{ y: ANIMATIONS.TITLEBAR.ANIMATE_Y }}
+      className="fixed top-0 left-0 right-0 h-12 bg-white/10 backdrop-blur-2xl border-b border-white/20 z-50 flex items-center justify-between px-4 shadow-2xl"
+      style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
     >
       {/* Left side - App info */}
       <div className="flex items-center space-x-3">
-        <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-md flex items-center justify-center">
-          <span className="text-white text-xs font-bold">G</span>
+        <div className="w-6 h-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-md flex items-center justify-center shadow-lg">
+          <span className="text-purple-400 text-xs font-bold">G</span>
         </div>
         <span className="text-white font-medium">{title}</span>
       </div>
@@ -43,31 +44,31 @@ export default function TitleBar({ title }: TitleBarProps) {
       {/* Right side - Window controls */}
       <div
         className="flex items-center space-x-2"
-        style={{ WebkitAppRegion: "no-drag" }}
+        style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: ANIMATIONS.TITLEBAR.BUTTON_HOVER_SCALE }}
+          whileTap={{ scale: ANIMATIONS.BUTTON.TAP_SCALE }}
           onClick={handleMinimize}
-          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors bg-white/5 backdrop-blur-sm border border-white/10"
         >
           <Minus className="w-4 h-4" />
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: ANIMATIONS.TITLEBAR.BUTTON_HOVER_SCALE }}
+          whileTap={{ scale: ANIMATIONS.BUTTON.TAP_SCALE }}
           onClick={handleMaximize}
-          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors bg-white/5 backdrop-blur-sm border border-white/10"
         >
           <Square className="w-4 h-4" />
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: ANIMATIONS.TITLEBAR.BUTTON_HOVER_SCALE }}
+          whileTap={{ scale: ANIMATIONS.BUTTON.TAP_SCALE }}
           onClick={handleClose}
-          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-500/20 hover:text-red-400 rounded transition-colors"
+          className="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 rounded transition-colors bg-white/5 backdrop-blur-sm border border-white/10"
         >
           <X className="w-4 h-4" />
         </motion.button>

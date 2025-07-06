@@ -17,7 +17,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import "./App.css";
-import TitleBar from "./components/TitleBar";
+import { AnimatedButton, Input, TitleBar } from "./components";
+import AnimatedBackground from "./components/AnimatedBackground";
+import ListComponent from "./components/List";
+import { ANIMATIONS } from "./constants/animations";
 
 // Types
 interface Song {
@@ -100,134 +103,140 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
+    <div className="h-screen text-white overflow-hidden relative">
+      <AnimatedBackground />
       <TitleBar title="Groovo - Music Player" />
 
-      {/* Main Container */}
-      <div className="flex h-full pt-12">
+      {/* Main Content Row: Sidebar + Main Content */}
+      <main className="flex h-full pt-12 relative z-10 pb-20">
         {/* Sidebar */}
         <motion.div
-          initial={{ x: -300 }}
-          animate={{ x: 0 }}
-          className="w-64 bg-black/20 backdrop-blur-xl border-r border-white/10"
+          initial={{ x: ANIMATIONS.SIDEBAR.INITIAL_X }}
+          animate={{ x: ANIMATIONS.SIDEBAR.ANIMATE_X }}
+          className="w-64 bg-white/3 backdrop-blur-md border-r border-white/10 shadow-md flex flex-col"
         >
           {/* App Header */}
-          <div className="p-6 border-b border-white/10">
+          <div className="p-6 border-b border-white/10 bg-white/3 backdrop-blur-sm">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Music className="w-5 h-5" />
+              <div className="w-8 h-8 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg flex items-center justify-center">
+                <Music className="w-5 h-5 text-purple-400" />
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Groovo
-              </h1>
+              <h1 className="text-xl font-bold text-purple-400">Groovo</h1>
             </div>
           </div>
 
           {/* Search Bar */}
           <div className="p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search music..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+            <Input
+              type="text"
+              placeholder="Search music..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              leftIcon={<Search className="w-4 h-4" />}
+              size="sm"
+              className="bg-white/5 border border-white/20 backdrop-blur-sm text-white placeholder:text-white/60 shadow-md focus:border-purple-400"
+            />
           </div>
 
           {/* Navigation */}
-          <nav className="px-4 space-y-2">
-            {[
-              { id: "home", icon: Home, label: "Home" },
-              { id: "music", icon: Music, label: "Music library" },
-              { id: "video", icon: Video, label: "Video library" },
-              { id: "playlists", icon: List, label: "Play queue" },
-            ].map((item) => (
-              <motion.button
-                key={item.id}
-                whileHover={{ x: 5 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setCurrentView(item.id as any)}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                  currentView === item.id
-                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                    : "text-gray-300 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
-              </motion.button>
-            ))}
+          <nav className="px-4 mt-2">
+            <ListComponent
+              items={[
+                {
+                  id: "home",
+                  icon: Home,
+                  label: "Home",
+                  active: currentView === "home",
+                  onClick: () => setCurrentView("home"),
+                },
+                {
+                  id: "music",
+                  icon: Music,
+                  label: "Music library",
+                  active: currentView === "music",
+                  onClick: () => setCurrentView("music"),
+                },
+                {
+                  id: "video",
+                  icon: Video,
+                  label: "Video library",
+                  active: currentView === "video",
+                  onClick: () => setCurrentView("video"),
+                },
+                {
+                  id: "playlists",
+                  icon: List,
+                  label: "Play queue",
+                  active: currentView === "playlists",
+                  onClick: () => setCurrentView("playlists"),
+                },
+              ]}
+            />
           </nav>
 
           {/* Settings */}
-          <div className="absolute bottom-4 left-4 right-4">
-            <motion.button
-              whileHover={{ x: 5 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all"
+          <div className="mt-auto mb-4 px-4">
+            <AnimatedButton
+              variant="ghost"
+              className="w-full justify-start bg-white/3 border border-white/10"
+              size="sm"
             >
-              <Settings className="w-5 h-5" />
-              <span className="font-medium">Settings</span>
-            </motion.button>
+              <Settings className="w-4 h-4" />
+              Settings
+            </AnimatedButton>
           </div>
         </motion.div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col bg-white/3 backdrop-blur-md">
           {/* Header */}
-          <div className="p-6 border-b border-white/10">
+          <div className="p-6 border-b border-white/10 bg-white/3 backdrop-blur-sm">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold capitalize">{currentView}</h2>
                 <div className="flex space-x-4 mt-4">
                   {["songs", "albums", "artists"].map((tab) => (
-                    <button
+                    <AnimatedButton
                       key={tab}
+                      variant={currentTab === tab ? "primary" : "ghost"}
                       onClick={() => setCurrentTab(tab as any)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        currentTab === tab
-                          ? "bg-purple-500 text-white"
-                          : "text-gray-300 hover:text-white hover:bg-white/10"
-                      }`}
+                      size="sm"
                     >
                       {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </button>
+                    </AnimatedButton>
                   ))}
                 </div>
               </div>
               <div className="flex space-x-3">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                <AnimatedButton
+                  variant="primary"
+                  size="sm"
+                  className="shadow-md border border-purple-400 bg-white/5 hover:bg-white/10 text-white/90"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Add folder</span>
-                </motion.button>
+                  Add folder
+                </AnimatedButton>
               </div>
             </div>
 
             {/* Sub Header */}
             <div className="flex items-center justify-between mt-6">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg font-medium transition-all flex items-center space-x-2"
+              <AnimatedButton
+                variant="primary"
+                size="md"
+                className="shadow-md border border-purple-400 bg-white/5 hover:bg-white/10 text-white/90"
               >
                 <Shuffle className="w-4 h-4" />
-                <span>Shuffle and play</span>
-              </motion.button>
+                Shuffle and play
+              </AnimatedButton>
               <div className="flex space-x-3">
-                <select className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white">
+                <select className="px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg text-white shadow-md focus:border-purple-400">
                   <option>Sort by</option>
                   <option>Name</option>
                   <option>Artist</option>
                   <option>Album</option>
                 </select>
-                <select className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white">
+                <select className="px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg text-white shadow-md focus:border-purple-400">
                   <option>Genre</option>
                   <option>Pop</option>
                   <option>Rock</option>
@@ -248,11 +257,8 @@ function App() {
                   {songs.map((song) => (
                     <motion.div
                       key={song.id}
-                      whileHover={{
-                        x: 5,
-                        backgroundColor: "rgba(255, 255, 255, 0.05)",
-                      }}
-                      className="flex items-center justify-between p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
+                      whileHover={false}
+                      className="flex items-center justify-between p-4 rounded-lg hover:bg-white/8 transition-all cursor-pointer bg-white/2 backdrop-blur-sm border border-white/5 shadow-md"
                       onClick={() => handlePlaySong(song)}
                     >
                       <div className="flex-1">
@@ -272,21 +278,21 @@ function App() {
             ))}
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Player Controls */}
+      {/* Player Controls (Media Controller) */}
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-xl border-t border-white/10 p-4"
+        className="fixed bottom-0 left-0 right-0 bg-white/5 backdrop-blur-md border-t border-white/10 p-4 shadow-lg z-20"
       >
         <div className="flex items-center justify-between">
           {/* Now Playing Info */}
           <div className="flex items-center space-x-4">
             {currentSong && (
               <>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                  <Music className="w-6 h-6" />
+                <div className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg flex items-center justify-center shadow-lg">
+                  <Music className="w-6 h-6 text-purple-400" />
                 </div>
                 <div>
                   <h4 className="font-medium text-white">
@@ -305,7 +311,7 @@ function App() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 text-gray-400 hover:text-white transition-colors"
+              className="p-2 text-gray-400 hover:text-white transition-colors bg-white/5 backdrop-blur-sm rounded-lg border border-white/10"
             >
               <SkipBack className="w-5 h-5" />
             </motion.button>
@@ -313,7 +319,7 @@ function App() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={togglePlayPause}
-              className="p-3 bg-purple-500 hover:bg-purple-600 rounded-full transition-colors"
+              className="p-3 bg-purple-500 hover:bg-purple-600 rounded-full transition-colors shadow-lg"
             >
               {isPlaying ? (
                 <Pause className="w-6 h-6" />
@@ -324,7 +330,7 @@ function App() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 text-gray-400 hover:text-white transition-colors"
+              className="p-2 text-gray-400 hover:text-white transition-colors bg-white/5 backdrop-blur-sm rounded-lg border border-white/10"
             >
               <SkipForward className="w-5 h-5" />
             </motion.button>
@@ -336,36 +342,24 @@ function App() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setShowEqualizer(true)}
-              className="p-2 text-gray-400 hover:text-white transition-colors"
+              className="p-2 text-gray-400 hover:text-white transition-colors bg-white/5 backdrop-blur-sm rounded-lg border border-white/10"
             >
               <Settings className="w-5 h-5" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 text-gray-400 hover:text-white transition-colors"
+              className="p-2 text-gray-400 hover:text-white transition-colors bg-white/5 backdrop-blur-sm rounded-lg border border-white/10"
             >
               <Volume2 className="w-5 h-5" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 text-gray-400 hover:text-white transition-colors"
+              className="p-2 text-gray-400 hover:text-white transition-colors bg-white/5 backdrop-blur-sm rounded-lg border border-white/10"
             >
               <Maximize2 className="w-5 h-5" />
             </motion.button>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mt-4">
-          <div className="w-full bg-white/20 rounded-full h-1">
-            <motion.div
-              className="bg-gradient-to-r from-purple-500 to-pink-500 h-1 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: isPlaying ? "30%" : "0%" }}
-              transition={{ duration: 0.5 }}
-            />
           </div>
         </div>
       </motion.div>
