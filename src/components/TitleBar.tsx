@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { motion } from "framer-motion";
 import { Minus, Square, X } from "lucide-react";
 import { useState } from "react";
@@ -10,20 +11,22 @@ interface TitleBarProps {
 export default function TitleBar({ title }: TitleBarProps) {
   const [isMaximized, setIsMaximized] = useState(false);
 
-  const handleMinimize = () => {
-    // TODO: Implement minimize functionality with Tauri
-    console.log("Minimize clicked");
+  const handleMinimize = async () => {
+    await getCurrentWindow().minimize();
   };
 
-  const handleMaximize = () => {
+  const handleMaximize = async () => {
     setIsMaximized(!isMaximized);
-    // TODO: Implement maximize functionality with Tauri
-    console.log("Maximize clicked");
+    const isMax = await getCurrentWindow().isMaximized();
+    if (isMax) {
+      await getCurrentWindow().unmaximize();
+    } else {
+      await getCurrentWindow().maximize();
+    }
   };
 
-  const handleClose = () => {
-    // TODO: Implement close functionality with Tauri
-    console.log("Close clicked");
+  const handleClose = async () => {
+    await getCurrentWindow().close();
   };
 
   return (

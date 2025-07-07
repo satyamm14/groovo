@@ -17,10 +17,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import "./App.css";
-import { AnimatedButton, Input, TitleBar } from "./components";
+import { AnimatedButton, Input } from "./components";
 import AnimatedBackground from "./components/AnimatedBackground";
+import CustomSelect from "./components/CustomSelect";
 import ListComponent from "./components/List";
-import { ANIMATIONS } from "./constants/animations";
 
 // Types
 interface Song {
@@ -51,6 +51,8 @@ function App() {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [showEqualizer, setShowEqualizer] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortValue, setSortValue] = useState("sort");
+  const [genreValue, setGenreValue] = useState("genre");
 
   // Mock data
   const mockSongs: Song[] = [
@@ -105,18 +107,14 @@ function App() {
   return (
     <div className="h-screen text-white overflow-hidden relative">
       <AnimatedBackground />
-      <TitleBar title="Groovo - Music Player" />
+      {/* <TitleBar title="Groovo - Music Player" /> */}
 
       {/* Main Content Row: Sidebar + Main Content */}
-      <main className="flex h-full pt-12 relative z-10 pb-20">
+      <main className="flex h-full relative pb-20">
         {/* Sidebar */}
-        <motion.div
-          initial={{ x: ANIMATIONS.SIDEBAR.INITIAL_X }}
-          animate={{ x: ANIMATIONS.SIDEBAR.ANIMATE_X }}
-          className="w-64 bg-white/3 backdrop-blur-md border-r border-white/10 shadow-md flex flex-col"
-        >
+        <motion.div className="w-64 bg-white/3 backdrop-blur-md border-r border-white/10 shadow-md flex flex-col">
           {/* App Header */}
-          <div className="p-6 border-b border-white/10 bg-white/3 backdrop-blur-sm">
+          <div className="p-5 border-b border-white/10 bg-white/3 backdrop-blur-sm">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg flex items-center justify-center">
                 <Music className="w-5 h-5 text-purple-400" />
@@ -126,7 +124,7 @@ function App() {
           </div>
 
           {/* Search Bar */}
-          <div className="p-4">
+          <div className="p-1 py-5">
             <Input
               type="text"
               placeholder="Search music..."
@@ -139,7 +137,7 @@ function App() {
           </div>
 
           {/* Navigation */}
-          <nav className="px-4 mt-2">
+          <nav className="px-1">
             <ListComponent
               items={[
                 {
@@ -175,11 +173,11 @@ function App() {
           </nav>
 
           {/* Settings */}
-          <div className="mt-auto mb-4 px-4">
+          <div className="mt-auto mb-3 px-1">
             <AnimatedButton
               variant="ghost"
               className="w-full justify-start bg-white/3 border border-white/10"
-              size="sm"
+              size="md"
             >
               <Settings className="w-4 h-4" />
               Settings
@@ -230,18 +228,28 @@ function App() {
                 Shuffle and play
               </AnimatedButton>
               <div className="flex space-x-3">
-                <select className="px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg text-white shadow-md focus:border-purple-400">
-                  <option>Sort by</option>
-                  <option>Name</option>
-                  <option>Artist</option>
-                  <option>Album</option>
-                </select>
-                <select className="px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg text-white shadow-md focus:border-purple-400">
-                  <option>Genre</option>
-                  <option>Pop</option>
-                  <option>Rock</option>
-                  <option>Jazz</option>
-                </select>
+                <CustomSelect
+                  value={sortValue}
+                  onChange={setSortValue}
+                  options={[
+                    { label: "Sort by", value: "sort" },
+                    { label: "Name", value: "name" },
+                    { label: "Artist", value: "artist" },
+                    { label: "Album", value: "album" },
+                  ]}
+                  size="sm"
+                />
+                <CustomSelect
+                  value={genreValue}
+                  onChange={setGenreValue}
+                  options={[
+                    { label: "Genre", value: "genre" },
+                    { label: "Pop", value: "pop" },
+                    { label: "Rock", value: "rock" },
+                    { label: "Jazz", value: "jazz" },
+                  ]}
+                  size="sm"
+                />
               </div>
             </div>
           </div>
@@ -257,7 +265,7 @@ function App() {
                   {songs.map((song) => (
                     <motion.div
                       key={song.id}
-                      whileHover={false}
+                      // whileHover={false}
                       className="flex items-center justify-between p-4 rounded-lg hover:bg-white/8 transition-all cursor-pointer bg-white/2 backdrop-blur-sm border border-white/5 shadow-md"
                       onClick={() => handlePlaySong(song)}
                     >
@@ -281,11 +289,7 @@ function App() {
       </main>
 
       {/* Player Controls (Media Controller) */}
-      <motion.div
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 bg-white/5 backdrop-blur-md border-t border-white/10 p-4 shadow-lg z-20"
-      >
+      <div className="fixed bottom-0 left-0 right-0 bg-white/5 backdrop-blur-md border-t border-white/10 p-4 shadow-lg z-20">
         <div className="flex items-center justify-between">
           {/* Now Playing Info */}
           <div className="flex items-center space-x-4">
@@ -362,7 +366,7 @@ function App() {
             </motion.button>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Equalizer Modal */}
       <AnimatePresence>

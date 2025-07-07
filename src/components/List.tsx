@@ -15,11 +15,11 @@ interface ListProps {
 
 const List: React.FC<ListProps> = ({ items, className }) => {
   return (
-    <ul className={`space-y-1 ${className || ""}`}>
+    <ul className={`space-y-1.5 text-sm ${className || ""}`}>
       {items.map((item) => (
         <li key={item.id}>
           <button
-            className={`flex items-center w-full px-4 py-2 rounded-lg transition-all duration-150 text-left gap-3 font-medium text-white/90 hover:bg-white/10 focus:outline-none border
+            className={`flex bg-transparent items-center w-full px-4 py-2.5 rounded-lg transition-all duration-100 text-left gap-3 font-medium text-white/90 hover:bg-white/10 focus:outline-none border
               ${
                 item.active
                   ? "bg-white/10 border-purple-400 shadow-md"
