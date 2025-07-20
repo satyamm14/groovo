@@ -1,39 +1,79 @@
 import React from "react";
+import { cn } from "../lib/utils";
 
-export interface ListItem {
-  id: string;
+export interface ListColumn {
+  key: string;
   label: string;
-  icon: React.ElementType;
-  active?: boolean;
-  onClick?: () => void;
+  width?: string;
+  align?: "left" | "center" | "right";
 }
 
-interface ListProps {
-  items: ListItem[];
+export interface ListRow {
+  id: string;
+  [key: string]: any;
+}
+
+export interface ListProps {
+  columns: ListColumn[];
+  rows: ListRow[];
+  selectedIds?: string[];
+  onRowClick?: (id: string) => void;
   className?: string;
 }
 
-const List: React.FC<ListProps> = ({ items, className }) => {
+const List: React.FC<ListProps> = ({
+  columns,
+  rows,
+  selectedIds = [],
+  onRowClick,
+  className,
+}) => {
   return (
-    <ul className={`space-y-1.5 text-sm ${className || ""}`}>
-      {items.map((item) => (
-        <li key={item.id}>
-          <button
-            className={`flex bg-transparent items-center w-full px-4 py-2.5 rounded-lg transition-all duration-100 text-left gap-3 font-medium text-white/90 hover:bg-white/10 focus:outline-none border
-              ${
-                item.active
-                  ? "bg-white/10 border-purple-400 shadow-md"
-                  : "bg-white/3 border-white/10"
-              }
-            `}
-            onClick={item.onClick}
+    <div className={cn("w-full text-sm", className)}>
+      <div className="flex bg-background-primary border-b border-thin">
+        {columns.map((col) => (
+          <div
+            key={col.key}
+            className={cn(
+              "px-4 py-3 font-medium text-text-secondary",
+              col.align === "center" && "text-center",
+              col.align === "right" && "text-right",
+              col.width && `w-[${col.width}]`
+            )}
           >
-            <item.icon className="w-4 h-4 mr-2 text-purple-300" />
-            <span>{item.label}</span>
-          </button>
-        </li>
-      ))}
-    </ul>
+            {col.label}
+          </div>
+        ))}
+      </div>
+      {rows.map((row) => {
+        const selected = selectedIds.includes(row.id);
+        return (
+          <div
+            key={row.id}
+            className={cn(
+              "flex items-center border-b border-[rgba(255,255,255,0.05)] transition-colors duration-fast cursor-pointer",
+              selected ? "bg-state-selected" : "hover:bg-surface-hover",
+              "h-12"
+            )}
+            onClick={() => onRowClick?.(row.id)}
+          >
+            {columns.map((col) => (
+              <div
+                key={col.key}
+                className={cn(
+                  "px-4 py-2 truncate",
+                  col.align === "center" && "text-center",
+                  col.align === "right" && "text-right",
+                  col.width && `w-[${col.width}]`
+                )}
+              >
+                {row[col.key]}
+              </div>
+            ))}
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

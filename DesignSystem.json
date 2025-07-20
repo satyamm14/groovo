@@ -1,0 +1,467 @@
+{
+  "designSystem": {
+    "name": "Windows Media Player Inspired Design System",
+    "version": "2.0.0",
+    "description": "A comprehensive design system based on Windows Media Player's modern dark interface with consistent layouts, interactions, and visual patterns"
+  },
+
+  "visualStyle": {
+    "theme": "windows_dark_modern",
+    "aesthetics": {
+      "primary_mood": "professional_clean",
+      "secondary_mood": "minimal_functional"
+    },
+
+    "colorPalette": {
+      "background": {
+        "primary": "#1a1a1a",
+        "secondary": "#2d2d2d",
+        "tertiary": "#333333",
+        "app_chrome": "#0f0f0f"
+      },
+      "surface": {
+        "card": "#2d2d2d",
+        "elevated": "#3d3d3d",
+        "selected": "#404040",
+        "hover": "#454545"
+      },
+      "accent": {
+        "primary": "#0078d4",
+        "primary_hover": "#106ebe",
+        "secondary": "#5c9bd5",
+        "focus": "#00bcf2"
+      },
+      "text": {
+        "primary": "#ffffff",
+        "secondary": "#cccccc",
+        "muted": "#999999",
+        "disabled": "#666666"
+      },
+      "interactive": {
+        "checkbox_unchecked": "#666666",
+        "checkbox_checked": "#0078d4",
+        "button_primary": "#0078d4",
+        "button_secondary": "#404040"
+      },
+      "state": {
+        "selected": "#0078d4",
+        "playing": "#00bcf2",
+        "error": "#ff4444",
+        "warning": "#ffaa00"
+      }
+    },
+
+    "typography": {
+      "fontFamily": {
+        "primary": "Segoe UI, system-ui, -apple-system, sans-serif",
+        "monospace": "Consolas, 'Courier New', monospace"
+      },
+      "scale": {
+        "xs": "11px",
+        "sm": "12px",
+        "base": "14px",
+        "lg": "16px",
+        "xl": "20px",
+        "2xl": "24px",
+        "3xl": "32px",
+        "4xl": "48px"
+      },
+      "weight": {
+        "normal": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "lineHeight": {
+        "tight": 1.2,
+        "normal": 1.4,
+        "relaxed": 1.6
+      }
+    },
+
+    "effects": {
+      "shadows": {
+        "none": "none",
+        "sm": "0 1px 2px rgba(0, 0, 0, 0.5)",
+        "md": "0 2px 4px rgba(0, 0, 0, 0.3)",
+        "lg": "0 4px 8px rgba(0, 0, 0, 0.2)",
+        "context_menu": "0 8px 16px rgba(0, 0, 0, 0.4)"
+      },
+      "borders": {
+        "none": "none",
+        "thin": "1px solid #404040",
+        "medium": "2px solid #404040",
+        "accent": "1px solid #0078d4",
+        "focus": "2px solid #00bcf2"
+      }
+    }
+  },
+
+  "layout": {
+    "structure": "sidebar_main_bottom_player",
+    "dimensions": {
+      "sidebar_width": "320px",
+      "header_height": "60px",
+      "player_height": "80px",
+      "content_padding": "16px"
+    },
+
+    "sidebar": {
+      "width": "320px",
+      "position": "fixed_left",
+      "background": "background.app_chrome",
+      "sections": [
+        {
+          "type": "search",
+          "height": "48px",
+          "padding": "12px"
+        },
+        {
+          "type": "navigation",
+          "items": [
+            "Home",
+            "Music library",
+            "Video library",
+            "Play queue",
+            "Playlists"
+          ],
+          "spacing": "2px"
+        },
+        {
+          "type": "settings",
+          "position": "bottom_before_player",
+          "height": "48px"
+        }
+      ]
+    },
+
+    "mainContent": {
+      "layout": "header_tabs_content",
+      "margin_left": "sidebar_width",
+      "margin_bottom": "player_height",
+
+      "header": {
+        "height": "60px",
+        "padding": "16px 24px",
+        "elements": ["page_title", "action_buttons", "view_controls"],
+        "background": "background.primary"
+      },
+
+      "tabs": {
+        "height": "48px",
+        "options": ["Songs", "Albums", "Artists"],
+        "style": "underlined",
+        "active_color": "accent.primary",
+        "padding": "0 24px"
+      },
+
+      "content": {
+        "padding": "16px 24px",
+        "view_modes": ["list", "grid", "card"],
+        "default_view": "list"
+      }
+    },
+
+    "bottomPlayer": {
+      "height": "80px",
+      "position": "fixed_bottom",
+      "width": "100%",
+      "background": "background.app_chrome",
+      "border_top": "1px solid #404040"
+    }
+  },
+
+  "components": {
+    "navigation": {
+      "item": {
+        "height": "48px",
+        "padding": "12px 16px",
+        "border_radius": "0px",
+        "margin": "0px 8px 2px 8px",
+        "hover_background": "surface.hover",
+        "active_background": "surface.selected",
+        "icon_size": "20px",
+        "gap": "12px",
+        "font_size": "base"
+      }
+    },
+
+    "buttons": {
+      "primary": {
+        "background": "accent.primary",
+        "color": "text.primary",
+        "border_radius": "4px",
+        "padding": "8px 16px",
+        "font_size": "sm",
+        "font_weight": "medium",
+        "hover_background": "accent.primary_hover"
+      },
+      "secondary": {
+        "background": "surface.card",
+        "color": "text.primary",
+        "border": "1px solid #404040",
+        "border_radius": "4px",
+        "padding": "8px 16px",
+        "hover_background": "surface.hover"
+      },
+      "icon": {
+        "background": "transparent",
+        "size": "32px",
+        "border_radius": "4px",
+        "hover_background": "surface.hover"
+      }
+    },
+
+    "inputs": {
+      "search": {
+        "background": "surface.card",
+        "border": "1px solid #404040",
+        "border_radius": "4px",
+        "padding": "8px 12px",
+        "font_size": "sm",
+        "placeholder_color": "text.muted",
+        "focus_border": "accent.focus"
+      }
+    },
+
+    "cards": {
+      "media_card": {
+        "aspect_ratio": "1:1",
+        "border_radius": "8px",
+        "overflow": "hidden",
+        "hover_transform": "scale(1.02)",
+        "transition": "transform 0.2s ease"
+      },
+      "album_artwork": {
+        "size": "160px",
+        "border_radius": "8px",
+        "box_shadow": "shadows.md"
+      }
+    },
+
+    "lists": {
+      "table_view": {
+        "row_height": "48px",
+        "padding": "0 16px",
+        "border_bottom": "1px solid rgba(255, 255, 255, 0.05)",
+        "hover_background": "surface.hover",
+        "selected_background": "rgba(0, 120, 212, 0.1)",
+        "checkbox_column_width": "48px"
+      },
+      "grid_view": {
+        "gap": "16px",
+        "min_item_width": "160px",
+        "max_columns": "auto-fit"
+      }
+    },
+
+    "contextMenu": {
+      "background": "surface.elevated",
+      "border": "1px solid #404040",
+      "border_radius": "8px",
+      "box_shadow": "shadows.context_menu",
+      "padding": "8px",
+      "min_width": "200px",
+
+      "item": {
+        "height": "32px",
+        "padding": "6px 12px",
+        "border_radius": "4px",
+        "hover_background": "surface.hover",
+        "font_size": "sm",
+        "gap": "8px"
+      },
+
+      "separator": {
+        "height": "1px",
+        "background": "#404040",
+        "margin": "4px 0"
+      }
+    },
+
+    "tabs": {
+      "container": {
+        "background": "background.primary",
+        "border_bottom": "1px solid #404040"
+      },
+      "tab": {
+        "padding": "12px 16px",
+        "font_size": "base",
+        "font_weight": "medium",
+        "color": "text.secondary",
+        "border_bottom": "2px solid transparent",
+        "hover_color": "text.primary"
+      },
+      "active_tab": {
+        "color": "text.primary",
+        "border_bottom_color": "accent.primary"
+      }
+    },
+
+    "toolbar": {
+      "selection_bar": {
+        "height": "48px",
+        "background": "surface.card",
+        "padding": "8px 16px",
+        "gap": "12px",
+        "border_radius": "8px",
+        "margin_bottom": "16px"
+      }
+    },
+
+    "player": {
+      "layout": "artwork_info_controls_volume",
+      "padding": "12px 16px",
+      "gap": "16px",
+
+      "artwork": {
+        "size": "56px",
+        "border_radius": "4px"
+      },
+
+      "info": {
+        "flex": "1",
+        "max_width": "200px"
+      },
+
+      "controls": {
+        "gap": "8px",
+        "button_size": "40px"
+      },
+
+      "progress": {
+        "height": "4px",
+        "background": "#404040",
+        "fill": "accent.primary",
+        "border_radius": "2px"
+      },
+
+      "volume": {
+        "width": "120px"
+      }
+    },
+
+    "checkboxes": {
+      "size": "16px",
+      "border_radius": "2px",
+      "border": "1px solid #666666",
+      "background_unchecked": "transparent",
+      "background_checked": "accent.primary",
+      "checkmark_color": "text.primary"
+    }
+  },
+
+  "interactions": {
+    "hover_states": {
+      "duration": "0.15s",
+      "easing": "ease-out",
+      "background_change": true,
+      "transform": "subtle_scale"
+    },
+
+    "selection": {
+      "single_click": "select",
+      "ctrl_click": "toggle_selection",
+      "shift_click": "range_selection",
+      "visual_feedback": "background_color_change"
+    },
+
+    "context_menu": {
+      "trigger": "right_click",
+      "position": "cursor_relative",
+      "dismiss": "click_outside_or_escape"
+    },
+
+    "drag_and_drop": {
+      "enabled": true,
+      "visual_feedback": "ghost_image",
+      "drop_zones": "playlists_queue"
+    }
+  },
+
+  "viewModes": {
+    "list_view": {
+      "type": "table",
+      "row_height": "48px",
+      "columns": [
+        "checkbox",
+        "title",
+        "artist",
+        "album",
+        "year",
+        "language",
+        "duration"
+      ],
+      "sortable": true,
+      "resizable_columns": true
+    },
+
+    "album_grid": {
+      "type": "grid",
+      "item_aspect_ratio": "1:1",
+      "min_item_width": "160px",
+      "gap": "16px",
+      "responsive_columns": true
+    },
+
+    "recent_media": {
+      "type": "grid",
+      "layout": "2_rows_5_columns",
+      "item_size": "variable",
+      "gap": "16px"
+    }
+  },
+
+  "spacing": {
+    "scale": {
+      "xs": "2px",
+      "sm": "4px",
+      "md": "8px",
+      "lg": "12px",
+      "xl": "16px",
+      "2xl": "24px",
+      "3xl": "32px",
+      "4xl": "48px"
+    }
+  },
+
+  "animations": {
+    "transitions": {
+      "fast": "0.15s ease-out",
+      "normal": "0.2s ease-out",
+      "slow": "0.3s ease-out"
+    },
+    "hover_effects": {
+      "background_fade": "background-color 0.15s ease-out",
+      "transform_scale": "transform 0.2s ease-out",
+      "opacity_change": "opacity 0.15s ease-out"
+    }
+  },
+
+  "breakpoints": {
+    "sm": "640px",
+    "md": "768px",
+    "lg": "1024px",
+    "xl": "1280px",
+    "2xl": "1536px"
+  },
+
+  "designPrinciples": {
+    "consistency": "Maintain consistent spacing, colors, and interaction patterns throughout",
+    "familiarity": "Follow Windows design conventions and user expectations",
+    "functionality": "Prioritize usability and clear information hierarchy",
+    "accessibility": "Ensure keyboard navigation and screen reader compatibility",
+    "performance": "Optimize for smooth scrolling and responsive interactions"
+  },
+
+  "implementation_notes": {
+    "framework": "Electron or web-based with native feel",
+    "styling": "CSS-in-JS or SCSS with design tokens",
+    "icons": "Fluent UI icons or similar system icons",
+    "state_management": "Context API or Redux for complex state",
+    "virtualization": "Required for large music libraries",
+    "keyboard_shortcuts": "Standard media player shortcuts (Space, Arrow keys, etc.)",
+    "drag_drop": "HTML5 drag and drop API",
+    "context_menus": "Custom implementation with portal rendering"
+  }
+}

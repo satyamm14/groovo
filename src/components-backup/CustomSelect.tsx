@@ -1,22 +1,26 @@
+import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "../lib/utils";
 
-interface Option {
-  label: string;
+interface SelectOption {
   value: string;
+  label: string;
 }
 
 interface CustomSelectProps {
   value: string;
-  onChange: (v: string) => void;
-  options: Option[];
+  onChange: (value: string) => void;
+  options: SelectOption[];
   size?: "sm" | "md" | "lg";
+  placeholder?: string;
+  disabled?: boolean;
 }
 
 const sizeClasses = {
-  sm: "py-1.5 pl-2 pr-7 text-sm min-h-[32px]",
-  md: "py-2 pl-3 pr-8 text-base min-h-[40px]",
-  lg: "py-3 pl-4 pr-10 text-lg min-h-[48px]",
+  sm: "py-1.5 pl-3 pr-8 text-sm min-h-[32px]",
+  md: "py-2 pl-4 pr-10 text-base min-h-[40px]",
+  lg: "py-3 pl-6 pr-12 text-lg min-h-[48px]",
 };
 
 export default function CustomSelect({
@@ -24,6 +28,8 @@ export default function CustomSelect({
   onChange,
   options,
   size = "md",
+  placeholder = "Select an option",
+  disabled = false,
 }: CustomSelectProps) {
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<number>(-1);
@@ -79,22 +85,24 @@ export default function CustomSelect({
     }
   }, [open]);
 
+  const selectedOption = options.find((o) => o.value === value);
+
   // Dropdown element for portal
   const dropdown = open
     ? createPortal(
         <ul
           style={dropdownStyle}
-          className="rounded-md bg-slate-800/95 shadow-lg ring-1 ring-black/10 focus:outline-none border border-white/10"
+          className="rounded-xl bg-surface-elevated/95 glass shadow-xl ring-1 ring-surface-glass_border focus:outline-none border border-surface-glass_border"
           tabIndex={-1}
           role="listbox"
         >
           {options.map((option, i) => (
             <li
               key={option.value}
-              className={`cursor-pointer select-none text-white hover:bg-purple-500/20 ${
+              className={`cursor-pointer select-none text-text-primary hover:bg-accent-primary/10 ${
                 sizeClasses[size]
-              } ${option.value === value ? "bg-purple-500/10" : ""} ${
-                highlighted === i ? "bg-purple-500/20" : ""
+              } ${option.value === value ? "bg-accent-primary/10" : ""} ${
+                highlighted === i ? "bg-accent-primary/20" : ""
               }`}
               role="option"
               aria-selected={option.value === value}
@@ -113,31 +121,29 @@ export default function CustomSelect({
     : null;
 
   return (
-    <div className="relative w-48">
+    <div className="relative">
       <button
         ref={buttonRef}
         type="button"
-        className={`flex w-full items-center justify-between rounded-md border border-white/10 bg-white/5 text-left text-white shadow-md focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-400 transition-colors ${sizeClasses[size]}`}
-        onClick={() => setOpen((o) => !o)}
+        disabled={disabled}
+        onClick={() => setOpen(!open)}
+        className={cn(
+          "flex w-full items-center justify-between rounded-xl border border-surface-glass_border bg-surface-elevated text-text-primary placeholder-text-muted transition-all duration-200 focus:outline-none focus:border-accent-primary focus:glow-subtle disabled:cursor-not-allowed disabled:opacity-50",
+          sizeClasses[size],
+          !selectedOption && "text-text-muted"
+        )}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span>
-          {options.find((o) => o.value === value)?.label || options[0].label}
+        <span className="truncate">
+          {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <svg
-          className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 text-text-muted transition-transform duration-200",
+            open && "rotate-180"
+          )}
+        />
       </button>
       {dropdown}
     </div>

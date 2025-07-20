@@ -6,17 +6,17 @@ interface AnimatedButtonProps {
   children: ReactNode;
   onClick?: () => void;
   variant?:
-    | "default"
     | "primary"
     | "secondary"
     | "ghost"
     | "destructive"
-    | "outline";
+    | "outline"
+    | "icon";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
   disabled?: boolean;
   glow?: boolean;
-  glowColor?: "purple" | "pink" | "white";
+  glowColor?: "primary" | "secondary" | "subtle";
   fullWidth?: boolean;
   loading?: boolean;
 }
@@ -26,38 +26,45 @@ const AnimatedButton = forwardRef<HTMLButtonElement, AnimatedButtonProps>(
     {
       children,
       onClick,
-      variant = "default",
-      size = "sm",
+      variant = "primary",
+      size = "md",
       className = "",
       disabled = false,
       glow = false,
-      glowColor = "purple",
+      glowColor = "primary",
       fullWidth = false,
       loading = false,
     },
     ref
   ) => {
     const baseClasses =
-      "font-normal transition-all duration-200 rounded-lg flex items-center justify-center gap-2 focus:outline-none";
+      "font-medium transition-all duration-200 rounded-xl flex items-center justify-center gap-2 focus:outline-none";
 
     const variantClasses = {
-      default:
-        "bg-slate-800 hover:bg-slate-700 backdrop-blur-sm border border-white/20 text-white",
       primary:
-        "bg-slate-800 hover:bg-slate-700 border-2 border-purple-500 text-white shadow-[0_0_10px_rgba(168,85,247,0.3)]",
-      secondary: "bg-slate-800 hover:bg-slate-700 text-white",
-      ghost: "text-gray-300 hover:text-white hover:bg-white/10",
-      destructive: "bg-red-500 hover:bg-red-600 text-white",
+        "bg-gradient-to-r from-accent-primary to-accent-secondary text-text-primary rounded-xl hover:glow-primary",
+      secondary:
+        "bg-surface-elevated text-text-primary border border-surface-glass_border rounded-xl hover:bg-surface-card",
+      ghost:
+        "text-text-secondary hover:text-text-primary hover:bg-surface-glass",
+      destructive: "bg-state-error hover:bg-red-600 text-white",
       outline:
-        "border border-white/20 bg-transparent hover:bg-white/10 text-white",
+        "border border-surface-glass_border bg-transparent hover:bg-surface-glass text-text-primary",
+      icon: "bg-transparent rounded-full w-10 h-10 hover:bg-surface-glass",
     };
 
     const sizeClasses = {
       xs: "h-7 px-2 text-xs font-medium",
-      sm: "h-8 px-3 text-sm font-medium",
-      md: "h-9 px-4 text-sm font-medium",
-      lg: "h-10 px-6 text-sm font-medium",
-      xl: "h-12 px-8 text-base font-medium",
+      sm: "h-8 px-4 text-sm font-medium",
+      md: "h-10 px-6 text-base font-medium",
+      lg: "h-12 px-8 text-lg font-medium",
+      xl: "h-14 px-10 text-xl font-semibold",
+    };
+
+    const glowClasses = {
+      primary: "glow-primary",
+      secondary: "glow-secondary",
+      subtle: "glow-subtle",
     };
 
     return (
@@ -72,10 +79,12 @@ const AnimatedButton = forwardRef<HTMLButtonElement, AnimatedButtonProps>(
           fullWidth && "w-full",
           disabled && "opacity-50 cursor-not-allowed",
           loading && "cursor-wait",
+          glow && glowClasses[glowColor],
           className
         )}
-        whileHover={disabled || loading ? {} : {}}
-        whileTap={disabled || loading ? {} : {}}
+        whileHover={disabled || loading ? {} : { scale: 1.02 }}
+        whileTap={disabled || loading ? {} : { scale: 0.98 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         {loading && (
           <motion.div

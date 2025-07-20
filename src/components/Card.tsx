@@ -1,99 +1,37 @@
-import { motion } from "framer-motion";
-import { ReactNode, forwardRef } from "react";
-import { ANIMATIONS } from "../constants/animations";
+import React from "react";
 import { cn } from "../lib/utils";
 
-interface CardProps {
-  children: ReactNode;
-  className?: string;
-  hover?: boolean;
-  glow?: boolean;
-  glowColor?: "purple" | "pink" | "white";
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "media" | "artwork";
+  hoverable?: boolean;
 }
 
-interface CardHeaderProps {
-  children: ReactNode;
-  className?: string;
-}
-
-interface CardContentProps {
-  children: ReactNode;
-  className?: string;
-}
-
-interface CardFooterProps {
-  children: ReactNode;
-  className?: string;
-}
-
-const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
-    { children, className, hover = false, glow = false, glowColor = "purple" },
-    ref
-  ) => {
-    const glowEffect = glow
-      ? {
-          boxShadow:
-            ANIMATIONS.GLOW[
-              glowColor.toUpperCase() as keyof typeof ANIMATIONS.GLOW
-            ],
-        }
-      : {};
-
-    return (
-      <motion.div
-        ref={ref}
-        className={cn(
-          "rounded-lg border border-white/10 bg-slate-800/50 backdrop-blur-xl",
-          className
-        )}
-        whileHover={
-          hover
-            ? {
-                scale: ANIMATIONS.CARD.HOVER_SCALE,
-                y: ANIMATIONS.CARD.HOVER_Y,
-                ...glowEffect,
-                transition: {
-                  duration: ANIMATIONS.DURATION.NORMAL,
-                  ease: ANIMATIONS.EASE.SMOOTH,
-                },
-              }
-            : {}
-        }
-      >
-        {children}
-      </motion.div>
-    );
-  }
-);
-
-const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ children, className }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)}>
+const Card: React.FC<CardProps> = ({
+  children,
+  className,
+  variant = "media",
+  hoverable = true,
+  ...props
+}) => {
+  const base =
+    "bg-surface-card overflow-hidden transition-transform duration-normal";
+  const variants = {
+    media: "rounded-lg aspect-square shadow-md",
+    artwork: "rounded-lg w-40 h-40 shadow-md",
+  };
+  return (
+    <div
+      className={cn(
+        base,
+        variants[variant],
+        hoverable && "hover:scale-[1.02]",
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
-  )
-);
+  );
+};
 
-const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
-  ({ children, className }, ref) => (
-    <div ref={ref} className={cn("p-6 pt-0", className)}>
-      {children}
-    </div>
-  )
-);
-
-const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
-  ({ children, className }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-6 pt-0", className)}>
-      {children}
-    </div>
-  )
-);
-
-Card.displayName = "Card";
-CardHeader.displayName = "CardHeader";
-CardContent.displayName = "CardContent";
-CardFooter.displayName = "CardFooter";
-
-export { Card, CardContent, CardFooter, CardHeader };
+export default Card;
