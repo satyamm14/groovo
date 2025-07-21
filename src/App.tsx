@@ -1,3 +1,8 @@
+import { invoke } from "@tauri-apps/api/core";
+import { join } from "@tauri-apps/api/path";
+import { open } from "@tauri-apps/plugin-dialog";
+import { readDir } from "@tauri-apps/plugin-fs";
+import { load, type Store } from "@tauri-apps/plugin-store";
 import {
   Home,
   List,
@@ -11,12 +16,12 @@ import {
   Video,
   Volume2,
 } from "lucide-react";
-import { useState } from "react";
-import { TrackRow } from "./components/ui/TrackRow";
+import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Slider } from "./components/ui/slider";
 import { Tabs, TabsList, TabsTrigger } from "./components/ui/tabs";
+import { TrackRow } from "./components/ui/TrackRow";
 import { Typography } from "./components/ui/typography";
 
 const NAV_ITEMS = [
@@ -33,10 +38,128 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(TABS[0]);
   // Placeholder for selected row, etc.
 
+  const [musicFolder, setMusicFolder] = useState<string | null>(null);
+  const [songs, setSongs] = useState<any[]>([]);
+  const [store, setStore] = useState<Store | null>(null);
+
+  // Helper to scan for music files and load them as Song objects
+  const scanMusicFolder = async (folder: string) => {
+    try {
+      const audioExtensions = [".mp3", ".flac", ".wav", ".aac", ".ogg", ".m4a"];
+      let foundSongs: any[] = [];
+      let stack: string[] = [folder];
+
+      while (stack.length) {
+        const currentDir = stack.pop();
+        if (!currentDir) continue;
+        const entries = await readDir(currentDir);
+
+        for (const entry of entries) {
+          // Build the full path for this entry
+          const entryPath = await join(currentDir, entry.name);
+          // If it's a directory, add to stack for further traversal
+          if (entry.isDirectory) {
+            stack.push(entryPath);
+          }
+          // If it's a file, check extension
+          if (entry.isFile) {
+            const lowerName = entryPath.toLowerCase();
+            if (audioExtensions.some((ext) => lowerName.endsWith(ext))) {
+              try {
+                // Call the Rust command to parse metadata
+                const metadata = await invoke<any>("parse_metadata", {
+                  filePathStr: entryPath,
+                });
+
+                foundSongs.push({
+                  id: entryPath,
+                  title: metadata.title || entry.name || entryPath,
+                  artist: metadata.artist || "Unknown Artist",
+                  album: metadata.album || "Unknown Album",
+                  year: metadata.year ? String(metadata.year) : "",
+                  genre: metadata.genre || "",
+                  duration: metadata.duration_secs
+                    ? new Date(metadata.duration_secs * 1000)
+                        .toISOString()
+                        .substr(11, 8)
+                    : "",
+                  path: entryPath,
+                  sampleRate: metadata.sample_rate_hz,
+                  bitrate: metadata.bitrate_kbps,
+                  channels: metadata.channels,
+                });
+              } catch (err) {
+                console.log("Error parsing folder:", err);
+
+                // Fallback to minimal info if metadata fails
+                foundSongs.push({
+                  id: entryPath,
+                  title: entry.name || entryPath,
+                  artist: "Unknown Artist",
+                  album: "Unknown Album",
+                  year: "",
+                  genre: "",
+                  duration: "",
+                  path: entryPath,
+                });
+              }
+            }
+          }
+        }
+      }
+      setSongs(foundSongs);
+    } catch (e) {
+      console.log("Error scanning folder:", e);
+      setSongs([]);
+    }
+  };
+
+  // Group songs alphabetically by first letter of title
+  function groupSongsAlphabetically(songs: any[]) {
+    const sorted = [...songs].sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+    );
+    return sorted.reduce((groups: Record<string, any[]>, song) => {
+      const letter = song.title[0]?.toUpperCase() || "#";
+      if (!groups[letter]) groups[letter] = [];
+      groups[letter].push(song);
+      return groups;
+    }, {});
+  }
+
+  // Load stored music folder on mount
+  useEffect(() => {
+    load("settings.dat", { autoSave: false }).then(setStore);
+  }, []);
+
+  useEffect(() => {
+    if (!store) return;
+    (async () => {
+      const folder = await store.get<string>("music_folder");
+      if (folder) {
+        setMusicFolder(folder);
+        scanMusicFolder(folder);
+      }
+    })();
+  }, [store]);
+
+  // Handler to select folder
+  const handleSelectMusicFolder = async () => {
+    const folder = await open({ directory: true, multiple: false });
+    if (typeof folder === "string") {
+      setMusicFolder(folder);
+      if (store) {
+        await store.set("music_folder", folder);
+        await store.save();
+      }
+      scanMusicFolder(folder);
+    }
+  };
+
   return (
     <>
-      <div className="flex min-h-screen bg-background text-foreground">
-        <div className="flex flex-1 max-h-full mb-28">
+      <div className="flex bg-background text-foreground">
+        <div className="flex flex-1 max-h-[84vh] mb-28">
           {/* Sidebar */}
           <aside className="flex h-full flex-col w-72 border-r border-border bg-sidebar text-sidebar-foreground">
             <div className="flex items-center gap-2 p-4">
@@ -72,7 +195,7 @@ export default function App() {
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 h-full flex flex-col bg-background text-foreground">
+          <main className="flex-1 flex flex-col bg-background text-foreground min-h-0">
             <header className="flex items-center justify-between p-8">
               <div className="flex flex-col gap-y-5">
                 <Typography variant="heading1">Music</Typography>
@@ -91,21 +214,38 @@ export default function App() {
                   <Shuffle className="w-4 h-4 mr-2" />
                   Shuffle and play
                 </Button>
-                <Button variant="secondary">Add folder</Button>
+                <Button variant="secondary" onClick={handleSelectMusicFolder}>
+                  Add folder
+                </Button>
               </div>
             </header>
             {/* Table/List */}
-            <section className="flex-1 overflow-auto p-8">
-              {/* Example: Table rows */}
-              <TrackRow
-                title="3am"
-                artist="Skrillex, Prentiss, Anthony Green"
-                album="Don't Get Too Close"
-                year="2023"
-                language="English"
-                duration="03:26"
-              />
-              {/* ...more rows */}
+            <section className="flex-1 h-full overflow-auto p-8">
+              {/* Render songs grouped alphabetically */}
+              {songs.length === 0 ? (
+                <Typography variant="muted">No songs found.</Typography>
+              ) : (
+                Object.entries(groupSongsAlphabetically(songs)).map(
+                  ([letter, group]) => (
+                    <div key={letter} className="mb-8">
+                      <Typography variant="body1" className="mb-2 text-primary">
+                        {letter}
+                      </Typography>
+                      {group.map((song) => (
+                        <TrackRow
+                          key={song.id}
+                          title={song.title}
+                          artist={song.artist}
+                          album={song.album}
+                          year={song.year}
+                          language={song.language}
+                          duration={song.duration}
+                        />
+                      ))}
+                    </div>
+                  )
+                )
+              )}
             </section>
           </main>
         </div>
