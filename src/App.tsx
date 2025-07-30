@@ -127,21 +127,16 @@ export default function App() {
     }, {});
   }
 
-  // Load stored music folder on mount
   useEffect(() => {
-    load("settings.dat", { autoSave: false }).then(setStore);
-  }, []);
-
-  useEffect(() => {
-    if (!store) return;
-    (async () => {
+    load("settings.dat", { autoSave: false }).then(async (store) => {
+      setStore(store);
       const folder = await store.get<string>("music_folder");
       if (folder) {
         setMusicFolder(folder);
         scanMusicFolder(folder);
       }
-    })();
-  }, [store]);
+    });
+  }, []);
 
   // Handler to select folder
   const handleSelectMusicFolder = async () => {
@@ -220,7 +215,7 @@ export default function App() {
               </div>
             </header>
             {/* Table/List */}
-            <section className="flex-1 h-full overflow-auto p-8">
+            <section className="flex-1 h-full overflow-auto p-8 custom-scrollbar">
               {/* Render songs grouped alphabetically */}
               {songs.length === 0 ? (
                 <Typography variant="muted">No songs found.</Typography>
